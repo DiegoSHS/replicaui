@@ -2,7 +2,7 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline'
 
 export default function Input({ children, ...props }) {
     return (
-        <input type='text' className='w-full p-2 m-2 border-2 border-red-200 rounded-md hover:border-red-400' {...props}>{children}</input>
+        <input type='text' className='text-black w-full p-2 m-2 border-2 border-red-200 rounded-md hover:border-red-400' {...props}>{children}</input>
     )
 }
 export const Paper = ({ children, ...props }) => {
