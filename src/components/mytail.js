@@ -1,6 +1,6 @@
-import { ArrowRightIcon, FireIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { ArrowRightIcon, CheckIcon, FireIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function Input({ children, ...props }) {
     return (
@@ -30,44 +30,70 @@ export const ReadMore = () => {
 
 export const SubjectCard = ({ defaultSubject, state }) => {
     const [subject, setSubject] = useState(defaultSubject)
+    const [editmode, setEditmode] = useState(false)
     const { editItem, deleteItem } = state
     const handleChange = (e) => {
         setSubject((subject) => ({ ...subject, [e.target.name]: e.target.value }))
-        editItem(subject.id, { ...subject, [e.target.name]: e.target.value })
-        console.log(subject)
     }
-    const handleSubmit = () => {
+    const handleDelete = () => {
         deleteItem(subject.id)
+    }
+    const handleEdit = () => {
+        setEditmode((editmode) => !editmode)
+    }
+    const handleSave = () => {
+        editItem(subject.id, subject)
+        handleEdit()
     }
     return (
         <Paper className='p-5 bg-white rounded-md shadow flex flex-col gap-1 shadow' onChange={handleChange}>
-            <Input placeholder='Materia' name='materia' defaultValue={subject.materia}></Input>
-            <Input placeholder='Profesor' name='profesor' defaultValue={subject.profesor}></Input>
-            <Input placeholder='Horario' name='horario' defaultValue={subject.horario}></Input>
-            <IconButton onClick={handleSubmit}>
-                Eliminar
-                <TrashIcon color='red' width={30} className='bg-red-200 rounded-full p-1' />
-            </IconButton>
+            <Input disabled={!editmode} placeholder='Materia' name='materia' defaultValue={subject.materia}></Input>
+            <Input disabled={!editmode} placeholder='Profesor' name='profesor' defaultValue={subject.profesor}></Input>
+            <Input disabled={!editmode} placeholder='Horario' name='horario' defaultValue={subject.horario}></Input>
+            <div className='flex flex-row items-center'>
+                <IconButton onClick={handleDelete}>
+                    Eliminar
+                    <TrashIcon color='red' width={30} className='bg-red-200 rounded-full p-1' />
+                </IconButton>
+                {!editmode && (
+                    <IconButton onClick={handleEdit}>
+                        Editar
+                        <PencilIcon color='red' width={30} className='bg-red-200 rounded-full p-1' />
+                    </IconButton>
+                )}
+                {editmode && (
+                    <>
+                        <IconButton onClick={handleSave}>
+                            Listo
+                            <CheckIcon color='red' width={30} className='bg-red-200 rounded-full p-1' />
+                        </IconButton>
+                    </>
+                )}
+            </div>
+            {editmode && (
+                <div className='text-red-500'>
+                    Los cambios se guardan de forma automática
+                </div>
+            )}
         </Paper>
     )
 }
 
 export const SubjectCards = ({ subjectsList }) => {
-
-    const [subjects, setSubjects] = useState(subjectsList.map((e, i) => ({ ...e, id: i })))
-
+    const [subjects, setSubjects] = useState(subjectsList)
     const addItem = (item) => {
-        setSubjects((subjects) => ([...subjects, { materia: '', profesor: '', horario: '', id: subjects.length }]))
-        console.log(subjects)
+        setSubjects((subjects) => [...subjects, { materia: '', profesor: '', horario: '', id: `item-id:${subjects.length}` }])
     }
     const editItem = (id, newItem) => {
-        setSubjects((subjects) => ([...subjects.filter(e => e.id !== id), newItem]))
-        console.log(subjects)
+        setSubjects((subjects) => [...subjects.filter(e => e.id !== id), { ...newItem, id: id }])
     }
     const deleteItem = (id) => {
-        setSubjects((subjects) => subjects.filter(e => e.id !== id))
-        console.log(subjects)
+        console.log(`deleting item : ${id}`)
+        setSubjects(subjects.filter(e => !(e.id === id)))
     }
+    useEffect(() => {
+        console.log(`Actual data`, subjects)
+    }, [subjects])
 
     const manageState = { addItem, editItem, deleteItem }
 

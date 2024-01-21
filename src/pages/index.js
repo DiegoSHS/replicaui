@@ -8,10 +8,12 @@ const defaultSubjects = [
   { materia: "Planeación y Organización del trabajo", profesor: "Mtra. María Vázquez", horario: ' martes 14-16, jueves 13-14' },
 ]
 
+const subjects = defaultSubjects.map((e, i) => ({ ...e, id: `item-id:${i}` }))
+
 export default function Home() {
   return (
     <Container>
-      <SubjectCards subjectsList={defaultSubjects} />
+      <SubjectCards subjectsList={subjects} />
     </Container>
   )
 }
